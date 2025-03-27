@@ -1,4 +1,4 @@
-# Galaxy Morphological Classification CNN Model
+# Galaxy Morphological Classification CNN Model based on ResNet18
 
 This project uses a Convolutional Neural Network (CNN) based on **ResNet18** to classify galaxy morphologies using the Galaxy10 SDSS dataset. The model is built with PyTorch, fine-tuned on the Galaxy10 SDSS dataset, and deployed as a Flask web app. Users can upload galaxy images through the web interface and receive classification predictions, including the galaxy type and confidence score, presented with an astronomical-themed UI (Orbitron font, space background, starry overlay, and cyan glowing effects).
 
