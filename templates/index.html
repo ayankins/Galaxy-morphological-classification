@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AstroVision | Galaxy Classification</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3a36db;
+            --primary-dark: #2a27b3;
+            --secondary: #00d4ff;
+            --dark: #0a0a23;
+            --darker: #050517;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #fd7e14;
+            --space-bg: radial-gradient(circle at center, #050517 0%, #0a0a23 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Space Mono', monospace;
+            background: var(--space-bg);
+            color: var(--light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Main container */
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: rgba(10, 10, 35, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(58, 54, 219, 0.2);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        /* Header section */
+        .header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            position: relative;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 10px rgba(58, 54, 219, 0.3);
+        }
+
+        .subtitle {
+            color: var(--gray);
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Upload section */
+        .upload-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2.5rem;
+            border: 2px dashed rgba(58, 54, 219, 0.3);
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            background: rgba(10, 10, 35, 0.5);
+        }
+
+        .upload-section:hover {
+            border-color: var(--primary);
+            background: rgba(58, 54, 219, 0.05);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .upload-text {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .upload-text h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: var(--light);
+        }
+
+        .upload-text p {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .file-label {
+            display: inline-block;
+            padding: 0.8rem 2rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(58, 54, 219, 0.3);
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .file-label:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(58, 54, 219, 0.4);
+        }
+
+        /* Result section */
+        .result-section {
+            display: none;
+            background: rgba(10, 10, 35, 0.7);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-top: 2rem;
+            border-left: 4px solid var(--primary);
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .result-icon {
+            font-size: 1.8rem;
+            color: var(--secondary);
+            margin-right: 1rem;
+        }
+
+        .result-title {
+            font-size: 1.5rem;
+        }
+
+        .result-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .image-container {
+            flex: 1;
+            min-width: 300px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .result-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.3s ease;
+        }
+
+        .result-image:hover {
+            transform: scale(1.02);
+        }
+
+        .prediction-container {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .prediction-item {
+            margin-bottom: 1.5rem;
+        }
+
+        .prediction-label {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-bottom: 0.3rem;
+            display: block;
+        }
+
+        .prediction-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--light);
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .confidence-meter {
+            height: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            margin-top: 0.5rem;
+            overflow: hidden;
+        }
+
+        .confidence-level {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 6px;
+            width: 0;
+            transition: width 1s ease;
+        }
+
+        /* Error message */
+        .error-message {
+            display: none;
+            padding: 1rem;
+            background: rgba(220, 53, 69, 0.1);
+            border-left: 4px solid var(--danger);
+            border-radius: 4px;
+            margin-top: 1rem;
+            color: var(--danger);
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* Loading spinner */
+        .spinner {
+            display: none;
+            width: 40px;
+            height: 40px;
+            margin: 2rem auto;
+            border: 4px solid rgba(58, 54, 219, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding: 1rem;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container {
+                margin: 1rem;
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .upload-section {
+                padding: 1.5rem;
+            }
+
+            .result-content {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>GALAXY MORPHOLOGY CLASSIFIER</h1>
+            <p class="subtitle">Upload an astronomical image to classify its galaxy morphology using deep learning</p>
+        </header>
+
+        <form id="upload-form" method="POST" enctype="multipart/form-data">
+            <div class="upload-section">
+                <div class="upload-icon">
+                    <i class="fas fa-stars"></i>
+                </div>
+                <div class="upload-text">
+                    <h3>UPLOAD GALAXY IMAGE</h3>
+                    <p>Supported formats: JPG, JPEG, PNG (Max 5MB)</p>
+                </div>
+                <input type="file" id="file-input" class="file-input" name="file" accept="image/*" required>
+                <label for="file-input" class="file-label">
+                    <i class="fas fa-folder-open"></i> SELECT IMAGE
+                </label>
+            </div>
+
+            <div class="spinner" id="spinner"></div>
+
+            <div class="error-message" id="error-message">
+                {% if error %}
+                    <i class="fas fa-exclamation-circle"></i> {{ error }}
+                {% endif %}
+            </div>
+
+            <button type="submit" class="file-label" style="width: 100%; text-align: center; justify-content: center;">
+                <i class="fas fa-rocket"></i> ANALYZE IMAGE
+            </button>
+        </form>
+
+        <div class="result-section" id="result-section">
+            <div class="result-header">
+                <div class="result-icon">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <h2 class="result-title">CLASSIFICATION RESULTS</h2>
+            </div>
+
+            <div class="result-content">
+                <div class="image-container">
+                    {% if image_path %}
+                        <img src="{{ url_for('static', filename='uploads/' + image_path) }}" class="result-image" id="result-image" alt="Uploaded galaxy image">
+                    {% endif %}
+                </div>
+
+                <div class="prediction-container">
+                    <div class="prediction-item">
+                        <span class="prediction-label">GALAXY TYPE</span>
+                        <div class="prediction-value" id="prediction-text">
+                            {% if predicted_class %}{{ predicted_class }}{% endif %}
+                        </div>
+                    </div>
+
+                    <div class="prediction-item">
+                        <span class="prediction-label">CONFIDENCE LEVEL</span>
+                        <div class="prediction-value" id="confidence-text">
+                            {% if confidence %}{{ confidence }}%{% endif %}
+                        </div>
+                        <div class="confidence-meter">
+                            <div class="confidence-level" id="confidence-level" style="width: {% if confidence %}{{ confidence }}%{% else %}0%{% endif %}"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Show error message if exists
+        {% if error %}
+            document.getElementById('error-message').style.display = 'block';
+        {% endif %}
+        
+        // Show results if available
+        {% if predicted_class %}
+            document.getElementById('result-section').style.display = 'block';
+        {% endif %}
+        
+        // Preview image before upload
+        document.getElementById('file-input').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const resultImage = document.getElementById('result-image');
+                    if (!resultImage) {
+                        const imgContainer = document.querySelector('.image-container');
+                        const img = document.createElement('img');
+                        img.id = 'result-image';
+                        img.className = 'result-image';
+                        img.src = event.target.result;
+                        imgContainer.appendChild(img);
+                    } else {
+                        resultImage.src = event.target.result;
+                    }
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // Show loading spinner during form submission
+        document.getElementById('upload-form').addEventListener('submit', function() {
+            document.getElementById('spinner').style.display = 'block';
+        });
+    </script>
+</body>
+</html>
